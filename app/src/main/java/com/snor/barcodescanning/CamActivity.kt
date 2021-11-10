@@ -2,19 +2,12 @@ package com.snor.barcodescanning
 
 import android.Manifest
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.PixelFormat
 import android.hardware.camera2.CaptureRequest
 import android.media.AudioManager
 import android.media.ToneGenerator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.util.Range
-import android.util.Rational
-import android.view.Surface
-import android.view.SurfaceHolder
-import android.view.SurfaceView
+import android.util.*
 import android.view.View
 import android.viewbinding.library.activity.viewBinding
 import android.widget.Toast
@@ -27,6 +20,7 @@ import com.snor.barcodescanning.databinding.ActivityCamBinding
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
+
 
 typealias BarcodeListener = (barcode: String) -> Unit
 
@@ -127,6 +121,8 @@ class CamActivity : AppCompatActivity() {
                 }
                 // Setup the ImageAnalyzer for the ImageAnalysis use case
                 val builder = ImageAnalysis.Builder()
+                    .setTargetResolution(Size(1280,720)) //o0o FU
+
 
                 val ext = Camera2Interop.Extender(builder)
                 ext.setCaptureRequestOption(
@@ -134,11 +130,13 @@ class CamActivity : AppCompatActivity() {
                     Range<Int>(5, 60)
                 )
 
+
                 imageAnalysis = builder.build()
                     .also {
-                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode ->
+                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode  ->
                             if (processingBarcode.compareAndSet(false, true)) {
                                 beep()
+                                Log.d("dd--", "Result: $barcode")
                                 val intent = Intent()
                                 intent.putExtra("BarcodeResult", barcode)
                                 setResult(RESULT_OK, intent)
@@ -146,6 +144,10 @@ class CamActivity : AppCompatActivity() {
                             }
                         })
                     }
+
+
+
+
 
                 try {
 

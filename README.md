@@ -88,7 +88,7 @@ If you planning to scan the barcode inside the box than pay attention on `activi
 ```
 
 Instead giving a fix width and height, i use percent for some purpose.
-The way i approch is bit dumb but is the most eesy way to do so you can understand more easily (a complex code doesn't show how pro you are.)
+The way i approch is bit dumb but is the most easy way to do so you can understand more easily (a complex code doesn't show how pro you are.)
 </br>
 
 In order to get image inside the box we have to crop it, but how? 

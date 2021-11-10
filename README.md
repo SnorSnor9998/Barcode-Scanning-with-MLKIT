@@ -96,7 +96,7 @@ In order to get image inside the box we have to crop it, but how?
 
 ### 1️⃣ First
 
-Inside `BarcodeAnalyzer` before giving the image to `scanner.process()` the image have to crop.</br>
+Inside `BarcodeAnalyzer` before giving the image to `scanner.process()` the image have to be crop.</br>
 
 We getting the height and width of the picture
 
@@ -125,7 +125,7 @@ How i calculate?
 
 <img src="screenshot/ss2.png" width="300" height="500"/>
 
-But sure this method will not always perfect, but it work most of the time i dont give a damn, you can do some minor changes by add/minus value at the back to adjust the rectangle.</br>
+But sure this method will not always perfect, but it work most of the time and i dont give a damn, you can do some minor changes by add/minus value at the back to adjust the rectangle.</br>
 
 ### 2️⃣ Second
 

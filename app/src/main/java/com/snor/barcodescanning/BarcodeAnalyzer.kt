@@ -45,7 +45,7 @@ class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnaly
                 .addOnSuccessListener { barcodes ->
                     // Task completed successfully
                     for (barcode in barcodes) {
-                        barcodeListener(barcode.rawValue ?: "")
+                        barcodeListener(barcode.rawValue ?: "", crop)
                     }
                 }
                 .addOnFailureListener {

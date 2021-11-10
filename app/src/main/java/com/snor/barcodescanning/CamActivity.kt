@@ -2,6 +2,7 @@ package com.snor.barcodescanning
 
 import android.Manifest
 import android.content.Intent
+import android.graphics.Bitmap
 import android.hardware.camera2.CaptureRequest
 import android.media.AudioManager
 import android.media.ToneGenerator
@@ -22,7 +23,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
 
-typealias BarcodeListener = (barcode: String) -> Unit
+typealias BarcodeListener = (barcode: String, previous : Bitmap) -> Unit
 
 class CamActivity : AppCompatActivity() {
 
@@ -133,14 +134,19 @@ class CamActivity : AppCompatActivity() {
 
                 imageAnalysis = builder.build()
                     .also {
-                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode  ->
+                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode , preview  ->
                             if (processingBarcode.compareAndSet(false, true)) {
                                 beep()
                                 Log.d("dd--", "Result: $barcode")
-                                val intent = Intent()
-                                intent.putExtra("BarcodeResult", barcode)
-                                setResult(RESULT_OK, intent)
-                                finish()
+
+                                binding.lblSubTitle.text = barcode
+                                binding.previous.setImageBitmap(preview)
+
+
+//                                val intent = Intent()
+//                                intent.putExtra("BarcodeResult", barcode)
+//                                setResult(RESULT_OK, intent)
+//                                finish()
                             }
                         })
                     }

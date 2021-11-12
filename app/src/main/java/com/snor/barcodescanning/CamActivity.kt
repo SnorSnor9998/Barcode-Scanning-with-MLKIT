@@ -121,7 +121,7 @@ class CamActivity : AppCompatActivity() {
                 }
                 // Setup the ImageAnalyzer for the ImageAnalysis use case
                 val builder = ImageAnalysis.Builder()
-                    .setTargetResolution(Size(1280,720)) //o0o FU
+                    .setTargetResolution(Size(1280,720))
 
 
                 val ext = Camera2Interop.Extender(builder)

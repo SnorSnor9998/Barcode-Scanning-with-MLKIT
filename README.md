@@ -17,7 +17,7 @@ implementation("androidx.camera:camera-view:1.0.0-alpha30")
 implementation("com.google.mlkit:barcode-scanning:17.0.0")
 ```
 
-Forgive im lazy, so im just shortcut on viewbinding by using this [library](https://github.com/yogacp/android-viewbinding).
+Forgive me im lazy, so im just do some shortcut on viewbinding by using this [library](https://github.com/yogacp/android-viewbinding).
 
 ## ⚙ Manifest
 

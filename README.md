@@ -149,6 +149,6 @@ scanner.process(image)
 
 ```
 
-That it.... if u still confuse visit [this](https://github.com/SnorSnor9998/Barcode-Scanning-with-MLKIT/tree/preview). There is a small preview when API capturing the image.
+That's it.... if u still confuse visit [this](https://github.com/SnorSnor9998/Barcode-Scanning-with-MLKIT/tree/preview). There is a small preview when API capturing the image.
 
 <img src="screenshot/gif2.gif" width="300" height="600"/> </br>

@@ -75,7 +75,8 @@ class CamActivity : AppCompatActivity() {
                 if (cam.cameraInfo.hasFlashUnit()) {
                     cam.cameraControl.enableTorch(flashOn)
                 }
-            } catch (e: Exception) { }
+            } catch (e: Exception) {
+            }
         }
     }
 
@@ -111,7 +112,7 @@ class CamActivity : AppCompatActivity() {
                 }
                 // Setup the ImageAnalyzer for the ImageAnalysis use case
                 val builder = ImageAnalysis.Builder()
-                    .setTargetResolution(Size(1280,720))
+                    .setTargetResolution(Size(1280, 720))
 
 
                 val ext = Camera2Interop.Extender(builder)
@@ -123,16 +124,18 @@ class CamActivity : AppCompatActivity() {
 
                 imageAnalysis = builder.build()
                     .also {
-                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode , image ->
+                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode, image ->
                             if (processingBarcode.compareAndSet(false, true)) {
                                 beep()
                                 Log.d("dd--", "Result: $barcode")
+                                val b64: String = B64Image.encode(image)
 
                                 val intent = Intent()
                                 intent.putExtra("BarcodeResult", barcode)
-                                intent.putExtra("B64Image",B64Image.encode(image))
+                                intent.putExtra("B64Image", b64)
                                 setResult(RESULT_OK, intent)
                                 finish()
+
                             }
                         })
                     }

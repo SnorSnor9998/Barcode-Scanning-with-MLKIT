@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnStart.setOnClickListener {
             val i = Intent(this, CamActivity::class.java)
             i.putExtra("title", "Example")
-            i.putExtra("msg", "Scan QR code to proceed")
+            i.putExtra("msg", "Scan Barcode")
             getContent.launch(i)
         }
 

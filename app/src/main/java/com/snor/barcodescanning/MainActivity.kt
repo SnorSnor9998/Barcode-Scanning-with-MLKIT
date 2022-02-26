@@ -16,11 +16,11 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
                 val barcode = it?.data?.extras?.get("BarcodeResult").toString()
-                val b64 = it?.data?.extras?.get("B64Image").toString()
-                val bitmap = B64Image.decode(b64)
+//                val b64 = it?.data?.extras?.get("B64Image").toString()
+//                val bitmap = B64Image.decode(b64)
 
                 binding.txtResult.text = barcode
-                binding.imgResult.setImageBitmap(bitmap)
+//                binding.imgResult.setImageBitmap(bitmap)
             }
         }
 

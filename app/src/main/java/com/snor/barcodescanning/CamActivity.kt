@@ -128,11 +128,11 @@ class CamActivity : AppCompatActivity() {
                             if (processingBarcode.compareAndSet(false, true)) {
                                 beep()
                                 Log.d("dd--", "Result: $barcode")
-                                val b64: String = B64Image.encode(image)
+//                                val b64: String = B64Image.encode(image)
 
                                 val intent = Intent()
                                 intent.putExtra("BarcodeResult", barcode)
-                                intent.putExtra("B64Image", b64)
+//                                intent.putExtra("B64Image", b64)
                                 setResult(RESULT_OK, intent)
                                 finish()
 

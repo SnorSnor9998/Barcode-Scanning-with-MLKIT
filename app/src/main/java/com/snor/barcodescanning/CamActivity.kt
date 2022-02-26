@@ -21,9 +21,6 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
-
-typealias BarcodeListener = (barcode: String) -> Unit
-
 class CamActivity : AppCompatActivity() {
 
     private val binding: ActivityCamBinding by viewBinding()
@@ -38,11 +35,9 @@ class CamActivity : AppCompatActivity() {
     private val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private var flashOn = false
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cam)
-
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
@@ -73,7 +68,6 @@ class CamActivity : AppCompatActivity() {
             binding.btnFlash.setImageDrawable(ContextCompat.getDrawable(this, id))
 
             try {
-
                 // Bind use cases to lifecycleOwner
                 val cam =
                     cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
@@ -81,18 +75,14 @@ class CamActivity : AppCompatActivity() {
                 if (cam.cameraInfo.hasFlashUnit()) {
                     cam.cameraControl.enableTorch(flashOn)
                 }
-            } catch (e: Exception) {
-            }
+            } catch (e: Exception) { }
         }
-
-
     }
 
     override fun onResume() {
         super.onResume()
         processingBarcode.set(false)
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
@@ -133,24 +123,21 @@ class CamActivity : AppCompatActivity() {
 
                 imageAnalysis = builder.build()
                     .also {
-                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode  ->
+                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode , image ->
                             if (processingBarcode.compareAndSet(false, true)) {
                                 beep()
                                 Log.d("dd--", "Result: $barcode")
+
                                 val intent = Intent()
                                 intent.putExtra("BarcodeResult", barcode)
+                                intent.putExtra("B64Image",B64Image.encode(image))
                                 setResult(RESULT_OK, intent)
                                 finish()
                             }
                         })
                     }
 
-
-
-
-
                 try {
-
                     // Unbind any bound use cases before rebinding
                     cameraProvider.unbindAll()
                     // Bind use cases to lifecycleOwner
@@ -169,14 +156,11 @@ class CamActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
     }
-
 
     private fun beep() {
         val toneGen = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
         toneGen.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200)
     }
-
 
 }

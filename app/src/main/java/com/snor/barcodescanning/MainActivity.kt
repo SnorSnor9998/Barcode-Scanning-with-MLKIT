@@ -2,43 +2,38 @@ package com.snor.barcodescanning
 
 import android.app.Activity
 import android.content.Intent
-import android.media.AudioManager
-import android.media.ToneGenerator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.viewbinding.library.activity.viewBinding
+import androidx.activity.result.contract.ActivityResultContracts
 import com.snor.barcodescanning.databinding.ActivityMainBinding
-
-private const val REQUEST_CODE = 88
 
 class MainActivity : AppCompatActivity() {
 
     private val binding : ActivityMainBinding by viewBinding()
+
+    private val getContent =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val barcode = it?.data?.extras?.get("BarcodeResult").toString()
+                val b64 = it?.data?.extras?.get("B64Image").toString()
+                val bitmap = B64Image.decode(b64)
+
+                binding.txtResult.text = barcode
+                binding.imgResult.setImageBitmap(bitmap)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         binding.btnStart.setOnClickListener {
-            scanning()
+            val i = Intent(this, CamActivity::class.java)
+            i.putExtra("title", "Example")
+            i.putExtra("msg", "Scan QR code to proceed")
+            getContent.launch(i)
         }
-
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val barcode = data?.getStringExtra("BarcodeResult")
-            binding.txtResult.text = barcode
-        }
-    }
-
-
-    private fun scanning(){
-        val i = Intent(this, CamActivity::class.java)
-        i.putExtra("title", "Example")
-        i.putExtra("msg", "Scan QR code to proceed")
-        startActivityForResult(i, REQUEST_CODE)
 
     }
 

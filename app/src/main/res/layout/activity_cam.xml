@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".CamActivity">
 
-
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="match_parent"
@@ -27,8 +26,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/white" />
-
-
 
     <TextView
         android:id="@+id/lbl_title"
@@ -70,7 +67,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
     <View
         android:id="@+id/shadow_top"
@@ -134,6 +130,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/img_qr_box"
         tools:visibility="visible" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

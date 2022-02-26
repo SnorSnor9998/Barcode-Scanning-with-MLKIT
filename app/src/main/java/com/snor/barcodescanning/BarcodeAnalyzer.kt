@@ -8,7 +8,8 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import android.graphics.*
 
-class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnalysis.Analyzer {
+class BarcodeAnalyzer(private val barcodeListener: (barcode: String, image: Bitmap) -> Unit) :
+    ImageAnalysis.Analyzer {
 
     private val scanner = BarcodeScanning.getClient()
 
@@ -31,21 +32,18 @@ class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnaly
             val rect = Rect(c1x, c1y, c2x, c2y)
             Log.d("dd--", "Rectangle: $rect")
 
-
             val ori: Bitmap = imageProxy.toBitmap()!!
             val crop = Bitmap.createBitmap(ori, rect.left, rect.top, rect.width(), rect.height())
 
-
             val image: InputImage =
                 InputImage.fromBitmap(crop, imageProxy.imageInfo.rotationDegrees)
-
 
             // Pass image to the scanner and have it do its thing
             scanner.process(image)
                 .addOnSuccessListener { barcodes ->
                     // Task completed successfully
                     for (barcode in barcodes) {
-                        barcodeListener(barcode.rawValue ?: "")
+                        barcodeListener(barcode.rawValue ?: "", crop)
                     }
                 }
                 .addOnFailureListener {
@@ -57,5 +55,4 @@ class BarcodeAnalyzer(private val barcodeListener: BarcodeListener) : ImageAnaly
                 }
         }
     }
-
 }

@@ -1,31 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
     tools:context=".MainActivity">
+
+
+    <ImageView
+        android:id="@+id/img_result"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_margin="64dp" />
 
     <TextView
         android:id="@+id/txt_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginHorizontal="32dp"
+        android:text="Hi!"
+        android:textColor="@color/black" />
 
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Start"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_result" />
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_margin="32dp"
+        android:text="Start" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

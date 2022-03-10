@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.camera2.interop.Camera2Interop
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import com.snor.barcodescanning.databinding.ActivityCamBinding
 import java.util.concurrent.ExecutorService
@@ -70,7 +71,7 @@ class CamActivity : AppCompatActivity() {
             try {
                 // Bind use cases to lifecycleOwner
                 val cam =
-                    cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
+                    cameraProvider.bindToLifecycle(this, cameraSelector, preview,imageAnalysis)
 
                 if (cam.cameraInfo.hasFlashUnit()) {
                     cam.cameraControl.enableTorch(flashOn)
@@ -105,34 +106,30 @@ class CamActivity : AppCompatActivity() {
                 cameraProvider = cameraProviderFuture.get()
                 // Initialize the Preview object, get a surface provider from your PreviewView,
                 // and set it on the preview instance.
-                preview = Preview.Builder().build().also {
-                    it.setSurfaceProvider(
-                        binding.previewView.surfaceProvider
-                    )
-                }
+//                preview = Preview.Builder().build().also {
+//                    it.setSurfaceProvider(
+//                        binding.previewView.surfaceProvider
+//                    )
+//                }
+                preview = Preview.Builder().build()
+                binding.previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+                preview.setSurfaceProvider(binding.previewView.surfaceProvider)
                 // Setup the ImageAnalyzer for the ImageAnalysis use case
                 val builder = ImageAnalysis.Builder()
-                    .setTargetResolution(Size(1280, 720))
+//                    .setTargetResolution(Size(1280, 720))
 
 
-                val ext = Camera2Interop.Extender(builder)
-                ext.setCaptureRequestOption(
-                    CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE,
-                    Range<Int>(5, 60)
-                )
 
 
                 imageAnalysis = builder.build()
                     .also {
-                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode, image ->
+                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode ->
                             if (processingBarcode.compareAndSet(false, true)) {
                                 beep()
                                 Log.d("dd--", "Result: $barcode")
-//                                val b64: String = B64Image.encode(image)
 
                                 val intent = Intent()
                                 intent.putExtra("BarcodeResult", barcode)
-//                                intent.putExtra("B64Image", b64)
                                 setResult(RESULT_OK, intent)
                                 finish()
 
@@ -145,7 +142,9 @@ class CamActivity : AppCompatActivity() {
                     cameraProvider.unbindAll()
                     // Bind use cases to lifecycleOwner
                     val cam =
-                        cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
+                        cameraProvider.bindToLifecycle(this, cameraSelector, preview,imageAnalysis)
+
+//                    preview.setSurfaceProvider(binding.previewView.surfaceProvider)
 
                     if (cam.cameraInfo.hasFlashUnit()) {
                         cam.cameraControl.enableTorch(flashOn)

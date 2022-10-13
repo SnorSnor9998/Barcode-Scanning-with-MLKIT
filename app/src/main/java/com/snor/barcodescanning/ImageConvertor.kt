@@ -4,6 +4,11 @@ import android.graphics.*
 import androidx.camera.core.ImageProxy
 import java.io.ByteArrayOutputStream
 
+fun Bitmap.rotate(degrees: Float): Bitmap {
+    val matrix = Matrix().apply { postRotate(degrees) }
+    return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+}
+
 fun ImageProxy.toBitmap(): Bitmap? {
     val nv21 = yuv420888ToNv21(this)
     val yuvImage = YuvImage(nv21, ImageFormat.NV21, width, height, null)

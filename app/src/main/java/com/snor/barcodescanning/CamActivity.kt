@@ -8,6 +8,9 @@ import android.media.ToneGenerator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.*
+import android.view.Surface
+import android.view.Surface.ROTATION_0
+import android.view.Surface.ROTATION_90
 import android.view.View
 import android.viewbinding.library.activity.viewBinding
 import android.widget.Toast
@@ -58,26 +61,13 @@ class CamActivity : AppCompatActivity() {
 
         //Back Button
         binding.btnBack.setOnClickListener {
+            setResult(RESULT_CANCELED)
             super.onBackPressed()
         }
 
         //Flash Button
         binding.btnFlash.setOnClickListener {
-            flashOn = !flashOn
-            //Change icon
-            val id = if (flashOn) R.drawable.ic_flash_off else R.drawable.ic_flash_on
-            binding.btnFlash.setImageDrawable(ContextCompat.getDrawable(this, id))
-
-            try {
-                // Bind use cases to lifecycleOwner
-                val cam =
-                    cameraProvider.bindToLifecycle(this, cameraSelector, preview,imageAnalysis)
-
-                if (cam.cameraInfo.hasFlashUnit()) {
-                    cam.cameraControl.enableTorch(flashOn)
-                }
-            } catch (e: Exception) {
-            }
+            flash()
         }
     }
 
@@ -101,35 +91,29 @@ class CamActivity : AppCompatActivity() {
             // The first argument is a Runnable, which will be where the magic actually happens.
             // The second argument (way down below) is an Executor that runs on the main thread.
             cameraProviderFuture.addListener({
-                // Add a ProcessCameraProvider, which binds the lifecycle of your camera to
-                // the LifecycleOwner within the application's life.
+
                 cameraProvider = cameraProviderFuture.get()
-                // Initialize the Preview object, get a surface provider from your PreviewView,
-                // and set it on the preview instance.
-//                preview = Preview.Builder().build().also {
-//                    it.setSurfaceProvider(
-//                        binding.previewView.surfaceProvider
-//                    )
-//                }
+
                 preview = Preview.Builder().build()
                 binding.previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
                 preview.setSurfaceProvider(binding.previewView.surfaceProvider)
+
                 // Setup the ImageAnalyzer for the ImageAnalysis use case
                 val builder = ImageAnalysis.Builder()
-//                    .setTargetResolution(Size(1280, 720))
-
-
-
+                    .setTargetResolution(Size(1080, 1920))
 
                 imageAnalysis = builder.build()
                     .also {
-                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode ->
+                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode , pic ->
                             if (processingBarcode.compareAndSet(false, true)) {
                                 beep()
                                 Log.d("dd--", "Result: $barcode")
 
+                                val encode = B64Image.encode(pic)
+
                                 val intent = Intent()
                                 intent.putExtra("BarcodeResult", barcode)
+                                intent.putExtra("Image",encode)
                                 setResult(RESULT_OK, intent)
                                 finish()
 
@@ -142,9 +126,7 @@ class CamActivity : AppCompatActivity() {
                     cameraProvider.unbindAll()
                     // Bind use cases to lifecycleOwner
                     val cam =
-                        cameraProvider.bindToLifecycle(this, cameraSelector, preview,imageAnalysis)
-
-//                    preview.setSurfaceProvider(binding.previewView.surfaceProvider)
+                        cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
 
                     if (cam.cameraInfo.hasFlashUnit()) {
                         cam.cameraControl.enableTorch(flashOn)
@@ -155,6 +137,22 @@ class CamActivity : AppCompatActivity() {
                     Log.e("PreviewUseCase", "Binding failed! :(", e)
                 }
             }, ContextCompat.getMainExecutor(this))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun flash() {
+        flashOn = !flashOn
+        // Change icon
+        val id = if (flashOn) R.drawable.ic_flash_off else R.drawable.ic_flash_on
+        binding.btnFlash.setImageDrawable(ContextCompat.getDrawable(this, id))
+
+        try {
+            // Bind use cases to lifecycleOwner
+            val cam =
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
+            cam.cameraControl.enableTorch(flashOn)
         } catch (e: Exception) {
             e.printStackTrace()
         }

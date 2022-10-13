@@ -2,8 +2,10 @@ package com.snor.barcodescanning
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.viewbinding.library.activity.viewBinding
 import androidx.activity.result.contract.ActivityResultContracts
 import com.snor.barcodescanning.databinding.ActivityMainBinding
@@ -15,12 +17,14 @@ class MainActivity : AppCompatActivity() {
     private val getContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
-                val barcode = it?.data?.extras?.get("BarcodeResult").toString()
-//                val b64 = it?.data?.extras?.get("B64Image").toString()
-//                val bitmap = B64Image.decode(b64)
+                val barcode = it?.data?.getStringExtra("BarcodeResult")
+                val pic = it?.data?.getStringExtra("Image")
+
+                val image = B64Image.decode(pic.toString())
 
                 binding.txtResult.text = barcode
-//                binding.imgResult.setImageBitmap(bitmap)
+                binding.imgResult.setImageBitmap(image)
+
             }
         }
 

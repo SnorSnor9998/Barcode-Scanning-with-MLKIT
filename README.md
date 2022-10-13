@@ -6,24 +6,25 @@ Showcase of barcode scanning using Google MLKIT and CameraX
 
 ```kotlin
 // View Binding
-implementation("com.github.yogacp:android-viewbinding:1.0.3")
+implementation("com.github.yogacp:android-viewbinding:1.0.4")
 
 // Camera API
-implementation("androidx.camera:camera-camera2:1.1.0-alpha10")
-implementation("androidx.camera:camera-lifecycle:1.1.0-alpha10")
-implementation("androidx.camera:camera-view:1.0.0-alpha30")
+implementation("androidx.camera:camera-camera2:1.2.0-beta02")
+implementation("androidx.camera:camera-lifecycle:1.2.0-beta02")
+implementation("androidx.camera:camera-view:1.2.0-beta02")
 
 // MLKit
-implementation("com.google.mlkit:barcode-scanning:17.0.0")
+implementation("com.google.mlkit:barcode-scanning:17.0.2")
 ```
 
 Forgive me im lazy, so im just do some shortcut on viewbinding by using this [library](https://github.com/yogacp/android-viewbinding).
 
 ## ⚙ Manifest
 
-```kotlin
+```xml
 <uses-permission android:name="android.permission.FLASHLIGHT" />
 <uses-permission android:name="android.permission.CAMERA" />
+<uses-feature android:name="android.hardware.camera.any" />
 ```
 
 </br>
@@ -38,12 +39,11 @@ And just copy
 ## 🏃‍♂️ How to start </br>
 
 ```kotlin
-
 binding.btnStart.setOnClickListener {
     val i = Intent(this, CamActivity::class.java)
     i.putExtra("title", "Example")
-    i.putExtra("msg", "Scan QR code to proceed")
-    startActivityForResult(i, REQUEST_CODE)
+    i.putExtra("msg", "Scan Barcode")
+    getContent.launch(i)
 }
 
 ```
@@ -51,13 +51,19 @@ binding.btnStart.setOnClickListener {
 How you get your result
 
 ```kotlin
-override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
-    if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-        val barcode = data?.getStringExtra("BarcodeResult")
-        binding.txtResult.text = barcode
+private val getContent =
+    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            val barcode = it?.data?.getStringExtra("BarcodeResult")
+            val pic = it?.data?.getStringExtra("Image")
+
+            val image = B64Image.decode(pic.toString())
+
+            binding.txtResult.text = barcode
+            binding.imgResult.setImageBitmap(image)
+
+        }
     }
-}
 
 ```
 
@@ -71,7 +77,7 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
 
 If you planning to scan the barcode inside the box than pay attention on `activity_cam.xml`
 
-```kotlin
+```xml
     <View
         android:id="@+id/img_qr_box"
         android:layout_width="0dp"
@@ -98,34 +104,43 @@ In order to get image inside the box we have to crop it, but how?
 
 Inside `BarcodeAnalyzer` before giving the image to `scanner.process()` the image have to be crop.</br>
 
-We getting the height and width of the picture
+How i calculate?
+
+<img src="screenshot/ss2.png" width="300" height="500"/>
+
+But sure this method will not always perfect, but it work most of the time and i dont give a damn, you can do some minor changes by add/minus value at the back to adjust the rectangle.</br>
+
+### ⚠️ ️Update (13/10/2022) ⚠️
+I realize the old version that image end up rotate anti-clockwise 90 degree and end up some device had some issue scanning barcode like CODE-128. </br>
+So in the end we need to rotate the image 90 degree clockwise before feed to the scanner.
+
+
+First, getting the height and width of the picture
 
 ```kotlin
 val height = mediaImage.height
 val width = mediaImage.width
 ```
 
-Than we need a rectangle with two coordinate that point top left and bottom right of the box(overlay). U can refer [this](https://stackoverflow.com/a/26253377) about `Rect()`
+U can refer [this](https://stackoverflow.com/a/26253377) about `Rect()`
 
 ```kotlin
-//Coordinate 1
-val c1x = (width * 0.125).toInt() + 150 //left
-val c1y = (height * 0.25).toInt() //top
+//Since in the end the image will rotate clockwise 90 degree
+//left -> top, top -> right, right -> bottom, bottom -> left
 
-//Coordinate 2
-val c2x = (width * 0.875).toInt() - 150 //right
-val c2y = (height * 0.75).toInt() //bottom
+//Top    : (far) -value > 0 > +value (closer)
+val c1x = (width * 0.125).toInt() + 150
+//Right  : (far) -value > 0 > +value (closer)
+val c1y = (height * 0.25).toInt() - 25
+//Bottom : (closer) -value > 0 > +value (far)
+val c2x = (width * 0.875).toInt() - 150
+//Left   : (closer) -value > 0 > +value (far)
+val c2y = (height * 0.75).toInt() + 25
 
-//Rectangle
 val rect = Rect(c1x, c1y, c2x, c2y)
 
 ```
 
-How i calculate?
-
-<img src="screenshot/ss2.png" width="300" height="500"/>
-
-But sure this method will not always perfect, but it work most of the time and i dont give a damn, you can do some minor changes by add/minus value at the back to adjust the rectangle.</br>
 
 ### 2️⃣ Second
 
@@ -135,20 +150,38 @@ Thanks [this](https://stackoverflow.com/a/62105972) amazing human, convert Image
 val ori: Bitmap = imageProxy.toBitmap()!!
 ```
 
-So we create a new image which is crop version from the original image
+So we create a new image which is crop version from the original image than we need rotate the image.
 
 ```kotlin
 val crop = Bitmap.createBitmap(ori, rect.left, rect.top, rect.width(), rect.height())
+val rImage = crop.rotate(90F)
 
-val image: InputImage = InputImage.fromBitmap(crop, imageProxy.imageInfo.rotationDegrees)
+val image: InputImage =
+    InputImage.fromBitmap(rImage, imageProxy.imageInfo.rotationDegrees)
 
+// Pass image to the scanner and have it do its thing
 scanner.process(image)
-    .addOnSuccessListener { 
-        ...
+    .addOnSuccessListener { barcodes ->
+        // Task completed successfully
+        for (barcode in barcodes) {
+            barcodeListener(barcode.rawValue ?: "", image.bitmapInternal!!)
+            imageProxy.close()
+        }
+    }
+    .addOnFailureListener {
+        // You should really do something about Exceptions
+        imageProxy.close()
+    }
+    .addOnCompleteListener {
+        // It's important to close the imageProxy
+        imageProxy.close()
     }
 
 ```
+### Snap Snap? The End.....
 
-That's it.... if u still confuse visit [this](https://github.com/SnorSnor9998/Barcode-Scanning-with-MLKIT/tree/preview). There is a small preview when API capturing the image.
-
-<img src="screenshot/gif2.gif" width="300" height="600"/> </br>
+That all. Happy Coding & keep suffering your life. </br>
+### Side note 📝
+- if you wonder all those conversions ( `.toBitmap()` & `.rotate()`) will affect the performance don't worry i test on my cheap ass phone (please donate me money) it only take average `0.1 sec` to process.
+- And there is some [guidelines](https://developers.google.com/ml-kit/vision/barcode-scanning/android#input-image-guidelines) you can follow and some tips for [performance](https://developers.google.com/ml-kit/vision/barcode-scanning/android#performance-tips) </br>
+- `.setTargetResolution` to 1080p for most of the case is really enough epically some high end phone like Samsung S20 it run buttery smooth and fast.

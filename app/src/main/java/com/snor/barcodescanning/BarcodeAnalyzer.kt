@@ -11,7 +11,8 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.common.Barcode
 
 class BarcodeAnalyzer(
-    private val barcodeListener: (barcode: String, bm: Bitmap) -> Unit
+//    private val barcodeListener: (barcode: String, bm: Bitmap) -> Unit
+    private val barcodeListener: (barcode: String) -> Unit
 ) : ImageAnalysis.Analyzer {
 
     private val scanner = BarcodeScanning.getClient()
@@ -50,7 +51,8 @@ class BarcodeAnalyzer(
                 .addOnSuccessListener { barcodes ->
                     // Task completed successfully
                     for (barcode in barcodes) {
-                        barcodeListener(barcode.rawValue ?: "", image.bitmapInternal!!)
+                        //barcodeListener(barcode.rawValue ?: "", image.bitmapInternal!!)
+                        barcodeListener(barcode.rawValue ?: "")
                         imageProxy.close()
                     }
                 }

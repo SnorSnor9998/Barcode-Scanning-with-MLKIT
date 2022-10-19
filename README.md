@@ -36,6 +36,13 @@ And just copy
 
 </br>
 
+
+### ⚠️ ️Update (19/10/2022) ⚠️
+There is a bug that will cause a crash when you start the app, apparently the preview is only able to show on Android Emulator but not on a real device.</br>
+So if you want adjust the scan box size or customize the box please do it on emulator.</br>
+DO NOT PASS THE IMAGE OUT FROM BARCODEANALYZER.</br>
+</br>
+
 ## 🏃‍♂️ How to start </br>
 
 ```kotlin
@@ -55,12 +62,14 @@ private val getContent =
     registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
             val barcode = it?.data?.getStringExtra("BarcodeResult")
-            val pic = it?.data?.getStringExtra("Image")
-
-            val image = B64Image.decode(pic.toString())
+            
+            //In Android Emulator Only
+            //val pic = it?.data?.getStringExtra("Image")
+            //val image = B64Image.decode(pic.toString())
+            //binding.imgResult.setImageBitmap(image)
 
             binding.txtResult.text = barcode
-            binding.imgResult.setImageBitmap(image)
+            
 
         }
     }
@@ -164,7 +173,9 @@ scanner.process(image)
     .addOnSuccessListener { barcodes ->
         // Task completed successfully
         for (barcode in barcodes) {
-            barcodeListener(barcode.rawValue ?: "", image.bitmapInternal!!)
+            //For Android Emulator Only
+            //barcodeListener(barcode.rawValue ?: "", image.bitmapInternal!!)
+            barcodeListener(barcode.rawValue ?: "")
             imageProxy.close()
         }
     }

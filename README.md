@@ -41,6 +41,7 @@ And just copy
 There is a bug that will cause a crash when you start the app, apparently the preview is only able to show on Android Emulator but not on a real device.</br>
 So if you want adjust the scan box size or customize the box please do it on emulator.</br>
 DO NOT PASS THE IMAGE OUT FROM BARCODEANALYZER.</br>
+[Preview Version](https://github.com/SnorSnor9998/Barcode-Scanning-with-MLKIT/tree/preview)
 </br>
 
 ## 🏃‍♂️ How to start </br>

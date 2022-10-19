@@ -109,11 +109,8 @@ class CamActivity : AppCompatActivity() {
                                 beep()
                                 Log.d("dd--", "Result: $barcode")
 
-                                //val encode = B64Image.encode(pic)
-
                                 val intent = Intent()
                                 intent.putExtra("BarcodeResult", barcode)
-                                //intent.putExtra("Image",encode)
                                 setResult(RESULT_OK, intent)
                                 finish()
 

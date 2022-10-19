@@ -104,16 +104,16 @@ class CamActivity : AppCompatActivity() {
 
                 imageAnalysis = builder.build()
                     .also {
-                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode ->
+                        it.setAnalyzer(cameraExecutor, BarcodeAnalyzer { barcode , pic ->
                             if (processingBarcode.compareAndSet(false, true)) {
                                 beep()
-                                Log.d("dd--", "Result: $barcode")
 
-                                //val encode = B64Image.encode(pic)
+                                Log.d("dd--", "Result: $barcode")
+                                val encode = B64Image.encode(pic)
 
                                 val intent = Intent()
                                 intent.putExtra("BarcodeResult", barcode)
-                                //intent.putExtra("Image",encode)
+                                intent.putExtra("Image",encode)
                                 setResult(RESULT_OK, intent)
                                 finish()
 

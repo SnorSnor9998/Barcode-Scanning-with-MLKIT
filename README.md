@@ -25,6 +25,17 @@ Forgive me im lazy, so im just do some shortcut on viewbinding by using this [li
 <uses-permission android:name="android.permission.FLASHLIGHT" />
 <uses-permission android:name="android.permission.CAMERA" />
 <uses-feature android:name="android.hardware.camera.any" />
+
+
+
+<application
+    ....
+    
+    <activity android:name=".CamActivity"
+              android:exported="false"/>
+    
+</application>
+
 ```
 
 </br>

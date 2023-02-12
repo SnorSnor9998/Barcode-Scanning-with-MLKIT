@@ -9,12 +9,12 @@ Showcase of barcode scanning using Google MLKIT and CameraX
 implementation("com.github.yogacp:android-viewbinding:1.0.4")
 
 // Camera API
-implementation("androidx.camera:camera-camera2:1.2.0-beta02")
-implementation("androidx.camera:camera-lifecycle:1.2.0-beta02")
-implementation("androidx.camera:camera-view:1.2.0-beta02")
+implementation("androidx.camera:camera-camera2:1.2.1")
+implementation("androidx.camera:camera-lifecycle:1.2.1")
+implementation("androidx.camera:camera-view:1.2.1")
 
 // MLKit
-implementation("com.google.mlkit:barcode-scanning:17.0.2")
+implementation("com.google.mlkit:barcode-scanning:17.0.3")
 ```
 
 Forgive me im lazy, so im just do some shortcut on viewbinding by using this [library](https://github.com/yogacp/android-viewbinding).
@@ -25,6 +25,17 @@ Forgive me im lazy, so im just do some shortcut on viewbinding by using this [li
 <uses-permission android:name="android.permission.FLASHLIGHT" />
 <uses-permission android:name="android.permission.CAMERA" />
 <uses-feature android:name="android.hardware.camera.any" />
+
+
+
+<application
+    ....
+    
+    <activity android:name=".CamActivity"
+              android:exported="false"/>
+    
+</application>
+
 ```
 
 </br>
@@ -41,6 +52,7 @@ And just copy
 There is a bug that will cause a crash when you start the app, apparently the preview is only able to show on Android Emulator but not on a real device.</br>
 So if you want adjust the scan box size or customize the box please do it on emulator.</br>
 DO NOT PASS THE IMAGE OUT FROM BARCODEANALYZER.</br>
+[Preview Version](https://github.com/SnorSnor9998/Barcode-Scanning-with-MLKIT/tree/preview)
 </br>
 
 ## 🏃‍♂️ How to start </br>

@@ -51,7 +51,7 @@ class BarcodeAnalyzer(
                     // Task completed successfully
                     for (barcode in barcodes) {
                         barcodeListener(barcode.rawValue ?: "")
-                        imageProxy.close()
+                        //imageProxy.close()
                     }
                 }
                 .addOnFailureListener {
